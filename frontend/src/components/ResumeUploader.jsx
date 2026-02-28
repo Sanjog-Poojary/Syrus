@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
+import { API_BASE_URL } from '../config'
 
 export default function ResumeUploader({ onUploaded }) {
     const [isDragging, setIsDragging] = useState(false)
@@ -31,7 +32,7 @@ export default function ResumeUploader({ onUploaded }) {
             const formData = new FormData()
             formData.append('file', file)
 
-            const response = await fetch('/api/upload-resume', {
+            const response = await fetch(`${API_BASE_URL}/api/upload-resume`, {
                 method: 'POST',
                 body: formData,
             })

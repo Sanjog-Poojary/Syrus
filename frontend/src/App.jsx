@@ -1,11 +1,16 @@
 import { useState, useCallback } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth, AuthProvider } from './contexts/AuthContext'
 import ResumeUploader from './components/ResumeUploader'
 import JDInput from './components/JDInput'
 import ResultsPanel from './components/ResultsPanel'
 import ATSScore from './components/ATSScore'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import { API_BASE_URL } from './config'
 import './App.css'
 
-function App() {
+function Dashboard() {
   const [parsedResume, setParsedResume] = useState(null)
   const [resumeFilename, setResumeFilename] = useState('')
   const [jdText, setJdText] = useState('')
@@ -13,6 +18,8 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [step, setStep] = useState(1) // 1: upload, 2: JD, 3: results
+
+  const { currentUser, logout } = useAuth()
 
   const handleResumeUploaded = useCallback((data) => {
     setParsedResume(data.parsed_resume)
@@ -28,7 +35,7 @@ function App() {
     setError('')
 
     try {
-      const response = await fetch('/api/generate-bullets', {
+      const response = await fetch(`${API_BASE_URL}/api/generate-bullets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -61,24 +68,46 @@ function App() {
     setStep(1)
   }, [])
 
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (err) {
+      console.error("Failed to log out", err)
+    }
+  }
+
   return (
     <div className="app-container">
       {/* Header */}
       <header className="app-header">
-        <div className="header-content">
-          <div className="logo-group">
-            <div className="logo-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9 8 9" />
-              </svg>
+        <div className="header-content flex justify-between items-center w-full">
+          <div className="flex items-center gap-4">
+            <div className="logo-group">
+              <div className="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <polyline points="10 9 9 9 8 9" />
+                </svg>
+              </div>
+              <h1 className="logo-text">Cyrus</h1>
             </div>
-            <h1 className="logo-text">Cyrus</h1>
+            <p className="tagline hidden md:block">Honest AI Resume Tailoring for Campus Placements</p>
           </div>
-          <p className="tagline">Honest AI Resume Tailoring for Campus Placements</p>
+
+          <div className="auth-status flex items-center gap-3">
+            <span className="text-sm font-medium text-slate-600 truncate max-w-[150px]">
+              {currentUser?.email}
+            </span>
+            <button
+              onClick={handleLogout}
+              className="text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              Log out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -198,6 +227,32 @@ function App() {
         <p>Cyrus — Built with honesty, for students who deserve better.</p>
       </footer>
     </div>
+  )
+}
+
+function ProtectedRoute({ children }) {
+  const { currentUser } = useAuth()
+  if (!currentUser) {
+    return <Navigate to="/login" />
+  }
+  return children
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
