@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import ALLOWED_ORIGINS
 from routes.resume import router as resume_router
+from routes.history import router as history_router
 
 app = FastAPI(
     title="Cyrus — Resume Agent API",
@@ -21,6 +22,7 @@ app.add_middleware(
 
 # Routes
 app.include_router(resume_router, prefix="/api")
+app.include_router(history_router, prefix="/api")
 
 
 @app.get("/")

@@ -93,6 +93,21 @@
   color: var(--color-slate-700);
 }
 
+.history-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-teal-600);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.history-link:hover {
+  background: var(--color-teal-50);
+  color: var(--color-teal-700);
+}
+
 /* ─── Steps Bar ─── */
 .steps-bar {
   max-width: 500px;

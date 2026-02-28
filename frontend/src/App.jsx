@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { useAuth, AuthProvider } from './contexts/AuthContext'
 import ResumeUploader from './components/ResumeUploader'
 import JDInput from './components/JDInput'
@@ -7,6 +7,7 @@ import ResultsPanel from './components/ResultsPanel'
 import ATSScore from './components/ATSScore'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import History from './pages/History'
 import { API_BASE_URL } from './config'
 import './App.css'
 
@@ -28,6 +29,27 @@ function Dashboard() {
     setError('')
   }, [])
 
+  // Auto-save session to history
+  const saveToHistory = useCallback(async (resultData) => {
+    if (!currentUser) return
+    try {
+      await fetch(`${API_BASE_URL}/api/history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: currentUser.uid,
+          jd_text: jdText,
+          bullets: resultData.bullets || [],
+          match_analysis: resultData.match_analysis || {},
+          ats_scores: resultData.ats_scores || {},
+          jd_keywords: resultData.jd_keywords || [],
+        }),
+      })
+    } catch (err) {
+      console.error('Failed to save to history:', err)
+    }
+  }, [currentUser, jdText])
+
   const handleGenerate = useCallback(async () => {
     if (!parsedResume || !jdText.trim()) return
     setLoading(true)
@@ -48,12 +70,15 @@ function Dashboard() {
       const data = await response.json()
       setResults(data)
       setStep(3)
+
+      // Auto-save to history
+      saveToHistory(data)
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
-  }, [parsedResume, jdText])
+  }, [parsedResume, jdText, saveToHistory])
 
   const handleReset = useCallback(() => {
     setParsedResume(null)
@@ -91,6 +116,7 @@ function Dashboard() {
           </div>
           <p className="tagline">Honest AI Resume Tailoring for Campus Placements</p>
           <div className="header-auth">
+            <Link to="/history" className="history-link">History</Link>
             <span className="header-email">{currentUser?.email}</span>
             <button onClick={handleLogout} className="logout-btn">Log out</button>
           </div>
@@ -228,6 +254,11 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/history" element={
+            <ProtectedRoute>
+              <History />
+            </ProtectedRoute>
+          } />
           <Route path="/" element={
             <ProtectedRoute>
               <Dashboard />
