@@ -15,6 +15,7 @@ FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "cyrus-732cc")
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://syrus-chi.vercel.app",
     "https://syrus-61sqr8nnx-sanjog-s-projects-4f3e7482.vercel.app"
 ]
 
