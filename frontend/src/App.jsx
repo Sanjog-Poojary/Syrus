@@ -17,7 +17,7 @@ function Dashboard() {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [step, setStep] = useState(1) // 1: upload, 2: JD, 3: results
+  const [step, setStep] = useState(1)
 
   const { currentUser, logout } = useAuth()
 
@@ -30,10 +30,8 @@ function Dashboard() {
 
   const handleGenerate = useCallback(async () => {
     if (!parsedResume || !jdText.trim()) return
-
     setLoading(true)
     setError('')
-
     try {
       const response = await fetch(`${API_BASE_URL}/api/generate-bullets`, {
         method: 'POST',
@@ -43,12 +41,10 @@ function Dashboard() {
           jd_text: jdText,
         }),
       })
-
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}))
         throw new Error(errData.detail || 'Failed to generate bullets')
       }
-
       const data = await response.json()
       setResults(data)
       setStep(3)
@@ -80,33 +76,23 @@ function Dashboard() {
     <div className="app-container">
       {/* Header */}
       <header className="app-header">
-        <div className="header-content flex justify-between items-center w-full">
-          <div className="flex items-center gap-4">
-            <div className="logo-group">
-              <div className="logo-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10 9 9 9 8 9" />
-                </svg>
-              </div>
-              <h1 className="logo-text">Cyrus</h1>
+        <div className="header-content">
+          <div className="logo-group">
+            <div className="logo-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
             </div>
-            <p className="tagline hidden md:block">Honest AI Resume Tailoring for Campus Placements</p>
+            <h1 className="logo-text">Cyrus</h1>
           </div>
-
-          <div className="auth-status flex items-center gap-3">
-            <span className="text-sm font-medium text-slate-600 truncate max-w-[150px]">
-              {currentUser?.email}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
-            >
-              Log out
-            </button>
+          <p className="tagline">Honest AI Resume Tailoring for Campus Placements</p>
+          <div className="header-auth">
+            <span className="header-email">{currentUser?.email}</span>
+            <button onClick={handleLogout} className="logout-btn">Log out</button>
           </div>
         </div>
       </header>
@@ -143,14 +129,12 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Step 1: Upload */}
         {step === 1 && (
           <div className="animate-fade-in-up">
             <ResumeUploader onUploaded={handleResumeUploaded} />
           </div>
         )}
 
-        {/* Step 2: JD Input */}
         {step === 2 && (
           <div className="animate-fade-in-up">
             <div className="resume-badge">
@@ -170,7 +154,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Step 3: Results */}
         {step === 3 && results && (
           <div className="results-layout animate-fade-in-up">
             <div className="scores-column">
