@@ -3,13 +3,23 @@ Firestore Service
 Handles saving and retrieving user sessions from Firebase Firestore.
 """
 
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timezone
 
-# Initialize Firebase Admin SDK (uses default credentials or GOOGLE_APPLICATION_CREDENTIALS)
+# Initialize Firebase Admin SDK
 if not firebase_admin._apps:
-    firebase_admin.initialize_app()
+    # Check for credentials JSON string in env var (for Render/production)
+    creds_json = os.getenv("FIREBASE_CREDENTIALS_JSON", "")
+    if creds_json:
+        creds_dict = json.loads(creds_json)
+        cred = credentials.Certificate(creds_dict)
+        firebase_admin.initialize_app(cred)
+    else:
+        # Falls back to GOOGLE_APPLICATION_CREDENTIALS file path or ADC
+        firebase_admin.initialize_app()
 
 db = firestore.client()
 
