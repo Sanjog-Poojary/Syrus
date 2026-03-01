@@ -5,6 +5,7 @@ import ResumeUploader from './components/ResumeUploader'
 import JDInput from './components/JDInput'
 import ResultsPanel from './components/ResultsPanel'
 import ATSScore from './components/ATSScore'
+import InterviewPrep from './components/InterviewPrep'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import History from './pages/History'
@@ -19,6 +20,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [step, setStep] = useState(1)
+  const [activeTab, setActiveTab] = useState('bullets')
 
   const { currentUser, logout } = useAuth()
 
@@ -87,6 +89,7 @@ function Dashboard() {
     setResults(null)
     setError('')
     setStep(1)
+    setActiveTab('bullets')
   }, [])
 
   const handleLogout = async () => {
@@ -182,46 +185,85 @@ function Dashboard() {
 
         {step === 3 && results && (
           <div className="results-layout animate-fade-in-up">
-            <div className="scores-column">
-              <ATSScore
-                beforeScore={results.ats_scores?.before_score || 0}
-                afterScore={results.ats_scores?.after_score || 0}
-              />
-              <div className="keywords-card">
-                <h3>Keywords Matched</h3>
-                <div className="keyword-tags">
-                  {results.ats_scores?.matched_keywords?.slice(0, 12).map((kw, i) => (
-                    <span key={i} className="keyword-tag matched">{kw}</span>
-                  ))}
+            {/* Tab Toggle */}
+            <div className="results-tab-bar">
+              <button
+                className={`tab-btn ${activeTab === 'bullets' ? 'active' : ''}`}
+                onClick={() => setActiveTab('bullets')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Bullets & ATS
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'interview' ? 'active' : ''}`}
+                onClick={() => setActiveTab('interview')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Interview Prep
+              </button>
+            </div>
+
+            {activeTab === 'bullets' && (
+              <>
+                <div className="scores-column">
+                  <ATSScore
+                    beforeScore={results.ats_scores?.before_score || 0}
+                    afterScore={results.ats_scores?.after_score || 0}
+                  />
+                  <div className="keywords-card">
+                    <h3>Keywords Matched</h3>
+                    <div className="keyword-tags">
+                      {results.ats_scores?.matched_keywords?.slice(0, 12).map((kw, i) => (
+                        <span key={i} className="keyword-tag matched">{kw}</span>
+                      ))}
+                    </div>
+                    {results.ats_scores?.new_matches_from_bullets?.length > 0 && (
+                      <>
+                        <h4>New Matches (from rewrites)</h4>
+                        <div className="keyword-tags">
+                          {results.ats_scores.new_matches_from_bullets.map((kw, i) => (
+                            <span key={i} className="keyword-tag new">{kw}</span>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {results.ats_scores?.missing_keywords?.length > 0 && (
+                      <>
+                        <h4>Still Missing</h4>
+                        <div className="keyword-tags">
+                          {results.ats_scores.missing_keywords.slice(0, 8).map((kw, i) => (
+                            <span key={i} className="keyword-tag missing">{kw}</span>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
-                {results.ats_scores?.new_matches_from_bullets?.length > 0 && (
-                  <>
-                    <h4>New Matches (from rewrites)</h4>
-                    <div className="keyword-tags">
-                      {results.ats_scores.new_matches_from_bullets.map((kw, i) => (
-                        <span key={i} className="keyword-tag new">{kw}</span>
-                      ))}
-                    </div>
-                  </>
-                )}
-                {results.ats_scores?.missing_keywords?.length > 0 && (
-                  <>
-                    <h4>Still Missing</h4>
-                    <div className="keyword-tags">
-                      {results.ats_scores.missing_keywords.slice(0, 8).map((kw, i) => (
-                        <span key={i} className="keyword-tag missing">{kw}</span>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="bullets-column">
-              <ResultsPanel
-                bullets={results.bullets}
-                matchAnalysis={results.match_analysis}
+                <div className="bullets-column">
+                  <ResultsPanel
+                    bullets={results.bullets}
+                    matchAnalysis={results.match_analysis}
+                    masterResumeText={parsedResume?.raw_text || ''}
+                    jdText={jdText}
+                  />
+                </div>
+              </>
+            )}
+
+            {activeTab === 'interview' && (
+              <InterviewPrep
+                parsedResume={parsedResume}
+                onBack={() => setActiveTab('bullets')}
               />
-            </div>
+            )}
+
             <div className="results-actions">
               <button onClick={handleReset} className="btn-secondary">
                 Start Over

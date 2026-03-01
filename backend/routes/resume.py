@@ -1,6 +1,7 @@
 """
 Resume API Routes
-Endpoints for uploading resumes, analyzing JDs, and generating tailored bullets.
+Endpoints for uploading resumes, analyzing JDs, generating tailored bullets,
+rewriting bullets (Honesty-First), and interview prep.
 """
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
@@ -10,6 +11,8 @@ from typing import Optional
 from services.pdf_parser import extract_text_from_pdf
 from services.llm_engine import generate_bullets
 from services.ats_scorer import extract_jd_keywords, calculate_ats_score
+from services.rewrite_engine import rewrite_bullet
+from services.interview_engine import generate_interview_prep
 
 router = APIRouter(tags=["Resume Agent"])
 
@@ -25,6 +28,19 @@ class JDAnalyzeRequest(BaseModel):
 class GenerateBulletsRequest(BaseModel):
     parsed_resume: dict
     jd_text: str
+
+
+class RewriteBulletRequest(BaseModel):
+    master_resume_text: str  # Full resume text for honesty verification
+    target_jd: str
+    target_experience: str   # The specific bullet/experience to rewrite
+
+
+class InterviewPrepRequest(BaseModel):
+    project_title: str
+    project_description: str
+    tech_stack: list[str] = []
+    github_url: Optional[str] = None
 
 
 # ────────────────────────────────────────────
@@ -127,4 +143,91 @@ async def generate_tailored_bullets(request: GenerateBulletsRequest):
         "match_analysis": llm_result.get("match_analysis", {}),
         "ats_scores": scores,
         "jd_keywords": jd_keywords,
+    }
+
+
+# ────────────────────────────────────────────
+# Honesty-First Rewrite Engine
+# ────────────────────────────────────────────
+
+@router.post("/rewrite-bullet")
+async def rewrite_bullet_endpoint(request: RewriteBulletRequest):
+    """
+    Rewrite a specific resume experience for a target JD.
+    Passes the FULL master_resume_text so the LLM can verify
+    honesty against the student's complete history.
+    """
+    if not request.master_resume_text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Master resume text is required for honesty verification."
+        )
+
+    if not request.target_jd.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Target job description cannot be empty."
+        )
+
+    if not request.target_experience.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Target experience to rewrite cannot be empty."
+        )
+
+    try:
+        result = rewrite_bullet(
+            master_resume_text=request.master_resume_text,
+            target_jd=request.target_jd,
+            target_experience=request.target_experience,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Rewrite engine failed: {str(e)}"
+        )
+
+    return {
+        "status": "success",
+        **result,
+    }
+
+
+# ────────────────────────────────────────────
+# Deep-Dive Interview Prep
+# ────────────────────────────────────────────
+
+@router.post("/interview-prep")
+async def interview_prep_endpoint(request: InterviewPrepRequest):
+    """
+    Generate 5 contextual interview questions for a student's project.
+    """
+    if not request.project_title.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Project title is required."
+        )
+
+    if not request.project_description.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Project description is required."
+        )
+
+    try:
+        result = generate_interview_prep(
+            project_title=request.project_title,
+            project_description=request.project_description,
+            tech_stack=request.tech_stack,
+            github_url=request.github_url,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Interview prep engine failed: {str(e)}"
+        )
+
+    return {
+        "status": "success",
+        **result,
     }
