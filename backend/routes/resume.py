@@ -13,6 +13,8 @@ from services.llm_engine import generate_bullets
 from services.ats_scorer import extract_jd_keywords, calculate_ats_score
 from services.rewrite_engine import rewrite_bullet
 from services.interview_engine import generate_interview_prep
+from services.roadmap_engine import generate_career_roadmap
+from services.assessment_engine import generate_assessment_prep
 
 router = APIRouter(tags=["Resume Agent"])
 
@@ -41,6 +43,15 @@ class InterviewPrepRequest(BaseModel):
     project_description: str
     tech_stack: list[str] = []
     github_url: Optional[str] = None
+
+
+class CareerRoadmapRequest(BaseModel):
+    master_resume_text: str
+    target_jd: str
+
+
+class AssessmentPrepRequest(BaseModel):
+    target_jd: str
 
 
 # ────────────────────────────────────────────
@@ -225,6 +236,75 @@ async def interview_prep_endpoint(request: InterviewPrepRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Interview prep engine failed: {str(e)}"
+        )
+
+    return {
+        "status": "success",
+        **result,
+    }
+
+
+# ────────────────────────────────────────────
+# Career Roadmap Architect (Skill Gaps)
+# ────────────────────────────────────────────
+
+@router.post("/career-roadmap")
+async def career_roadmap_endpoint(request: CareerRoadmapRequest):
+    """
+    Generate a career roadmap identifying skill gaps and learning resources.
+    """
+    if not request.master_resume_text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Master resume text is required."
+        )
+
+    if not request.target_jd.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Target job description is required."
+        )
+
+    try:
+        result = generate_career_roadmap(
+            master_resume_text=request.master_resume_text,
+            target_jds=request.target_jd,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Career roadmap engine failed: {str(e)}"
+        )
+
+    return {
+        "status": "success",
+        **result,
+    }
+
+
+# ────────────────────────────────────────────
+# Placement Intelligence Agent (Assessments)
+# ────────────────────────────────────────────
+
+@router.post("/assessment-prep")
+async def assessment_prep_endpoint(request: AssessmentPrepRequest):
+    """
+    Predict the assessment pattern based on the target company JD.
+    """
+    if not request.target_jd.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Target job description is required."
+        )
+
+    try:
+        result = generate_assessment_prep(
+            target_jd=request.target_jd,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Assessment Prep engine failed: {str(e)}"
         )
 
     return {

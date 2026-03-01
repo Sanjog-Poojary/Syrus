@@ -1424,3 +1424,301 @@
     padding: 1rem;
   }
 }
+
+/* ────────────────────────────────────────────
+   Career Roadmap Styles
+   ──────────────────────────────────────────── */
+.career-roadmap-container,
+.assessment-prep-container {
+  grid-column: 1 / -1;
+}
+
+.readiness-card {
+  background: var(--color-teal-50);
+  border: 1px solid var(--color-teal-200);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  color: var(--color-teal-800);
+}
+
+.readiness-card h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.readiness-card p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.gaps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.gap-card {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  padding: 1.25rem;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.gap-card:hover {
+  border-color: var(--color-emerald-300);
+}
+
+.gap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.gap-skill {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  margin-top: 0;
+}
+
+.gap-badges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.badge.frequency {
+  background: var(--color-slate-100);
+  color: var(--color-slate-700);
+}
+
+.badge.impact-high {
+  background: #ffe4e6;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+}
+
+.badge.impact-medium {
+  background: #fef9c3;
+  color: #a16207;
+  border: 1px solid #fef08a;
+}
+
+.resources-container {
+  background: var(--color-slate-50);
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.resources-title {
+  font-size: 0.85rem;
+  color: var(--color-slate-600);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.resources-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.resource-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.resource-provider {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-teal-400), var(--color-emerald-500));
+  color: white;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.resource-details {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resource-link {
+  font-size: 0.9rem;
+  color: var(--color-teal-600);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.resource-link:hover {
+  text-decoration: underline;
+}
+
+.resource-time {
+  font-size: 0.8rem;
+  color: var(--color-slate-500);
+}
+
+/* ────────────────────────────────────────────
+   Assessment Prep Styles
+   ──────────────────────────────────────────── */
+.company-context-card {
+  background: linear-gradient(135deg, var(--color-teal-50), var(--color-emerald-50));
+  border: 1px solid var(--color-teal-100);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.company-info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-teal-600);
+  font-weight: 700;
+}
+
+.info-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-slate-800);
+}
+
+.provider-name {
+  color: var(--color-emerald-600);
+}
+
+.sub-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-slate-700);
+  margin-top: 0;
+}
+
+.sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.test-section-card {
+  background: white;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.ts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-slate-100);
+}
+
+.ts-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-slate-800);
+  margin: 0;
+}
+
+.ts-difficulty {
+  font-size: 0.75rem;
+  background: var(--color-slate-100);
+  color: var(--color-slate-700);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.ts-topics strong {
+  font-size: 0.8rem;
+  color: var(--color-slate-500);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.ts-topics ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+  color: var(--color-slate-700);
+}
+
+.ts-topics li {
+  margin-bottom: 0.2rem;
+}
+
+.crunch-roadmap-card {
+  background: var(--color-slate-800);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  line-height: 1.6;
+}
+
+.crunch-roadmap-card h3 {
+  color: #facc15;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  margin-top: 0;
+}
+
+.crunch-roadmap-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+  .gap-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .resource-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .company-info-row {
+    flex-direction: column;
+  }
+}

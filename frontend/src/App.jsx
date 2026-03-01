@@ -6,6 +6,8 @@ import JDInput from './components/JDInput'
 import ResultsPanel from './components/ResultsPanel'
 import ATSScore from './components/ATSScore'
 import InterviewPrep from './components/InterviewPrep'
+import CareerRoadmap from './components/CareerRoadmap'
+import AssessmentPrep from './components/AssessmentPrep'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import History from './pages/History'
@@ -201,12 +203,30 @@ function Dashboard() {
                 className={`tab-btn ${activeTab === 'interview' ? 'active' : ''}`}
                 onClick={() => setActiveTab('interview')}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                   <line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
                 Interview Prep
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'skill_gaps' ? 'active' : ''}`}
+                onClick={() => setActiveTab('skill_gaps')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                Skill Gaps
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'assessment' ? 'active' : ''}`}
+                onClick={() => setActiveTab('assessment')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                Assessment Prep
               </button>
             </div>
 
@@ -261,6 +281,19 @@ function Dashboard() {
               <InterviewPrep
                 parsedResume={parsedResume}
                 onBack={() => setActiveTab('bullets')}
+              />
+            )}
+
+            {activeTab === 'skill_gaps' && (
+              <CareerRoadmap
+                masterResumeText={parsedResume?.raw_text || ''}
+                jdText={jdText}
+              />
+            )}
+
+            {activeTab === 'assessment' && (
+              <AssessmentPrep
+                jdText={jdText}
               />
             )}
 
